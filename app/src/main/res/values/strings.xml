@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">PracticeProject</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="crime_report_solved">已解决</string>
+    <string name="crime_report_unsolved">未解决</string>
+    <string name="crime_report_no_user">there is no user</string>
+    <string name="crime_report_user">user is %s.</string>
+    <string name="crime_report">send</string>
+    <string name="crime_report_subject">Crime Report</string>
+</resources>
