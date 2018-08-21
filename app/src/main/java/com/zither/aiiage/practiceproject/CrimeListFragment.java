@@ -95,12 +95,12 @@ public class CrimeListFragment extends android.support.v4.app.Fragment {
                     new AlertDialog.Builder(getActivity()).setTitle("确定删除吗").setPositiveButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            Toast.makeText(getActivity(), "长按", Toast.LENGTH_SHORT).show();
                             DatebaseHelper datebaseHelper=new DatebaseHelper(getActivity());
                               mBeanList.remove(crimeBean);
                             datebaseHelper.deleteCrimeById(crimeBean.getId());
                               mCrimeAdapter.notifyItemRemoved(i);
                               notifyDataSetChanged();
+                            Toast.makeText(getActivity(), "删除成功", Toast.LENGTH_SHORT).show();
                         }
                     }).setNegativeButton("取消",null).create().show();
                     return false;
