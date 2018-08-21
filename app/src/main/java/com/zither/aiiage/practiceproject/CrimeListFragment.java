@@ -61,7 +61,7 @@ public class CrimeListFragment extends android.support.v4.app.Fragment {
         DatebaseHelper datebaseHelper=new DatebaseHelper(getActivity());
         List<CrimeBean> list=datebaseHelper.getAllCrimeBean();
         if (mCrimeAdapter==null) {
-            mCrimeAdapter = new CrimeAdapter(list);
+            mCrimeAdapter = new CrimeAdapter(list,getActivity());
             mRecyclerView.setAdapter(mCrimeAdapter);
             mCrimeAdapter.notifyDataSetChanged();
         }
@@ -70,88 +70,6 @@ public class CrimeListFragment extends android.support.v4.app.Fragment {
             mCrimeAdapter.notifyDataSetChanged();
         }
     }
-
-    public class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder>{
-        private List<CrimeBean> mBeanList;
-
-        public CrimeAdapter(List<CrimeBean> crimeBeans) {
-            mBeanList=crimeBeans;
-        }
-
-        @NonNull
-        @Override
-        public CrimeHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-            LayoutInflater layoutInflater=LayoutInflater.from(getActivity());
-            return new CrimeHolder(layoutInflater,viewGroup);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull CrimeHolder crimeHolder, int i) {
-            final CrimeBean crimeBean=mBeanList.get(i);
-            crimeHolder.bind(crimeBean);
-            crimeHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    new AlertDialog.Builder(getActivity()).setTitle("确定删除吗").setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            DatebaseHelper datebaseHelper=new DatebaseHelper(getActivity());
-                              mBeanList.remove(crimeBean);
-                            datebaseHelper.deleteCrimeById(crimeBean.getId());
-                              mCrimeAdapter.notifyItemRemoved(i);
-                              notifyDataSetChanged();
-                            Toast.makeText(getActivity(), "删除成功", Toast.LENGTH_SHORT).show();
-                        }
-                    }).setNegativeButton("取消",null).create().show();
-                    return false;
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return mBeanList.size();
-        }
-
-        public void setCrime(List<CrimeBean> list) {
-            mBeanList=list;
-        }
-    }
-    public TextView mTitle,mDate,solved;
-    public class CrimeHolder extends RecyclerView.ViewHolder{
-
-        private CrimeBean mCrimeBean;
-        private LinearLayout mLinearLayout;
-        public void  bind(CrimeBean crimeBean){
-            mCrimeBean= crimeBean;
-            mTitle.setText(crimeBean.getName());
-            mDate.setText(crimeBean.getDate().toString());
-            System.out.println("mCrimeBean"+mCrimeBean.toString());
-            if (mCrimeBean.isSolved()==false){
-                mLinearLayout.setVisibility(View.VISIBLE);
-                solved.setVisibility(View.GONE);
-            }else {
-                solved.setVisibility(View.VISIBLE);
-                mLinearLayout.setVisibility(View.GONE);
-            }
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent=CrimePagerActivity.newInstance(getActivity(),mCrimeBean.getId());
-                    startActivity(intent);
-                }
-            });
-
-        }
-        public CrimeHolder(LayoutInflater linearLayout,ViewGroup viewGroup){
-            super(linearLayout.inflate(R.layout.crimelist_item,viewGroup,false));
-            mTitle=itemView.findViewById(R.id.crimelist_title);
-            mDate=itemView.findViewById(R.id.crimelist_date);
-            solved=itemView.findViewById(R.id.tv_solved);
-            mLinearLayout=itemView.findViewById(R.id.iv_unsolved);
-        }
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
