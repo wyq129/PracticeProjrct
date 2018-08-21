@@ -60,7 +60,7 @@ public class MainActivity extends Activity implements View.OnClickListener, Comp
         buttonSend.setOnClickListener(this);
         buttonSelectUser.setOnClickListener(this);
         cbIfsolved.setOnCheckedChangeListener(this);
-        pickContact.addCategory(Intent.CATEGORY_HOME);
+        //pickContact.addCategory(Intent.CATEGORY_HOME);
         PackageManager manager=MainActivity.this.getPackageManager();
         if (manager.resolveActivity(pickContact, PackageManager.MATCH_DEFAULT_ONLY)==null){
             buttonSelectUser.setEnabled(false);

@@ -100,7 +100,7 @@ public class DatebaseHelper extends SQLiteOpenHelper {
      * @return
      */
     public boolean deleteCrimeById(int id) {
-        if (id != -1) {
+        if (id == -1) {
             return false;
         }
         return queryCrimeBy(id) != null && deleteCrime(id);
@@ -109,7 +109,7 @@ public class DatebaseHelper extends SQLiteOpenHelper {
 
     private boolean deleteCrime(int id) {
         SQLiteDatabase db = getWritableDatabase();
-        return db.delete(TABLE_NAME, "id = ?", new String[]{id + ""}) > 0;
+        return db.delete(TABLE_NAME, "ID = ?", new String[]{id + ""}) > 0;
     }
 
     /**
@@ -122,7 +122,6 @@ public class DatebaseHelper extends SQLiteOpenHelper {
         String sql = "select * from " + TABLE_NAME;
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(sql, null);
-
         cursor.moveToFirst();
         while (cursor.moveToNext()) {
             CrimeBean crimeBean = new CrimeBean();

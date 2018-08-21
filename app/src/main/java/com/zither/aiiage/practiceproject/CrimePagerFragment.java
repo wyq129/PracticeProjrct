@@ -19,7 +19,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import com.zither.aiiage.practiceproject.sqlLite.CrimeBean;
-import com.zither.aiiage.practiceproject.sqlLite.CrimeLab;
 import com.zither.aiiage.practiceproject.sqlLite.DatebaseHelper;
 
 import java.util.Date;
@@ -68,7 +67,6 @@ public class CrimePagerFragment extends android.support.v4.app.Fragment implemen
         Bundle b = getArguments();
         crimeId = b.getInt(DATE, -1);
         Log.d(DATE, "onCreateView: " + crimeId);
-        CrimeLab crimeLab = new CrimeLab(getActivity());
         DatebaseHelper datebaseHelper = new DatebaseHelper(getActivity());
         mCrimeBean = datebaseHelper.getCrimeBeanById(crimeId);
         user = mCrimeBean.getUser();

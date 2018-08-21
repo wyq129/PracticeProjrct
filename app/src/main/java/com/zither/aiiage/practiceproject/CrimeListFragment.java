@@ -1,6 +1,8 @@
 package com.zither.aiiage.practiceproject;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zither.aiiage.practiceproject.sqlLite.CrimeBean;
 import com.zither.aiiage.practiceproject.sqlLite.DatebaseHelper;
@@ -48,6 +51,8 @@ public class CrimeListFragment extends android.support.v4.app.Fragment {
             }
         });
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        // 如果可以确定每个item的高度是固定的，设置这个选项可以提高性能
+        mRecyclerView.setHasFixedSize(true);
         updateUI();
         return view;
     }
@@ -82,8 +87,25 @@ public class CrimeListFragment extends android.support.v4.app.Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull CrimeHolder crimeHolder, int i) {
-            CrimeBean crimeBean=mBeanList.get(i);
+            final CrimeBean crimeBean=mBeanList.get(i);
             crimeHolder.bind(crimeBean);
+            crimeHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    new AlertDialog.Builder(getActivity()).setTitle("确定删除吗").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Toast.makeText(getActivity(), "长按", Toast.LENGTH_SHORT).show();
+                            DatebaseHelper datebaseHelper=new DatebaseHelper(getActivity());
+                              mBeanList.remove(crimeBean);
+                            datebaseHelper.deleteCrimeById(crimeBean.getId());
+                              mCrimeAdapter.notifyItemRemoved(i);
+                              notifyDataSetChanged();
+                        }
+                    }).setNegativeButton("取消",null).create().show();
+                    return false;
+                }
+            });
         }
 
         @Override
