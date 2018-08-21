@@ -89,7 +89,11 @@ public class DatebaseHelper extends SQLiteOpenHelper {
         contentValues.put(crime_date, crimeBean.getDate().getTime());
         contentValues.put(crime_solved, crimeBean.isSolved());
         contentValues.put(crime_user, crimeBean.getUser());
-        db.update(TABLE_NAME, contentValues, "ID = ?", new String[]{crimeBean.getId() + ""});
+        //修改条件
+        String whereClause = "ID = ?";
+        //修改条件的参数
+        String[] whereArgs = {crimeBean.getId() + ""};
+        db.update(TABLE_NAME, contentValues, whereClause ,whereArgs );
         db.close();
     }
 
@@ -122,6 +126,7 @@ public class DatebaseHelper extends SQLiteOpenHelper {
         String sql = "select * from " + TABLE_NAME;
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery(sql, null);
+        // 始终让cursor指向数据库表的第1行记录
         cursor.moveToFirst();
         while (cursor.moveToNext()) {
             CrimeBean crimeBean = new CrimeBean();

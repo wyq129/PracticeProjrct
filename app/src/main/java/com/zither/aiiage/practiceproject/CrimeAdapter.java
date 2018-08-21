@@ -20,49 +20,51 @@ import java.util.List;
  * @author wangyanqin
  * @date 2018/08/21
  */
-public class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder>{
+public class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
     private List<CrimeBean> mBeanList;
     Context mContext;
-    public CrimeAdapter(List<CrimeBean> crimeBeans,Context context) {
-        mBeanList=crimeBeans;
-        mContext=context;
+
+    public CrimeAdapter(List<CrimeBean> crimeBeans, Context context) {
+        mBeanList = crimeBeans;
+        mContext = context;
     }
 
     @NonNull
     @Override
     public CrimeHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        LayoutInflater layoutInflater=LayoutInflater.from(mContext);
-        return new CrimeHolder(layoutInflater,viewGroup);
+        LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+            return new CrimeHolder(layoutInflater, viewGroup);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CrimeHolder crimeHolder, int i) {
-        final CrimeBean crimeBean=mBeanList.get(i);
-        crimeHolder.bind(crimeBean);
-        crimeHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent=CrimePagerActivity.newInstance(mContext,crimeBean.getId());
-                mContext.startActivity(intent);
-            }
-        });
-        crimeHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                new AlertDialog.Builder(mContext).setTitle("确定删除吗").setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        DatebaseHelper datebaseHelper=new DatebaseHelper(mContext);
-                        mBeanList.remove(crimeBean);
-                        datebaseHelper.deleteCrimeById(crimeBean.getId());
-                        notifyItemRemoved(i);
-                        notifyDataSetChanged();
-                        Toast.makeText(mContext, "删除成功", Toast.LENGTH_SHORT).show();
-                    }
-                }).setNegativeButton("取消",null).create().show();
-                return false;
-            }
-        });
+    public void onBindViewHolder(@NonNull final CrimeHolder viewHolder, int i) {
+
+            final CrimeBean crimeBean = mBeanList.get(i);
+            ((CrimeHolder) viewHolder).bind(crimeBean);
+            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = CrimePagerActivity.newInstance(mContext, crimeBean.getId());
+                    mContext.startActivity(intent);
+                }
+            });
+            viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    new AlertDialog.Builder(mContext).setTitle("确定删除吗").setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            DatebaseHelper datebaseHelper = new DatebaseHelper(mContext);
+                            mBeanList.remove(crimeBean);
+                            datebaseHelper.deleteCrimeById(crimeBean.getId());
+                            notifyItemRemoved(i);
+                            notifyDataSetChanged();
+                            Toast.makeText(mContext, "删除成功", Toast.LENGTH_SHORT).show();
+                        }
+                    }).setNegativeButton("取消", null).create().show();
+                    return false;
+                }
+            });
     }
 
     @Override
@@ -71,7 +73,7 @@ public class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder>{
     }
 
     public void setCrime(List<CrimeBean> list) {
-        mBeanList=list;
+        mBeanList = list;
     }
 }
 
