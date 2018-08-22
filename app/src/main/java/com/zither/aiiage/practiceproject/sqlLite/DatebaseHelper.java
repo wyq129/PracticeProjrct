@@ -19,8 +19,8 @@ import java.util.List;
 public class DatebaseHelper extends SQLiteOpenHelper {
     private static final String TAG = "DatebaseHelper";
     private static final String DATABASE_NAME = "crime.db";
-    public static final String TABLE_NAME = "crime_table";
-    private static final int VERSION = 13;
+    public static final String TABLE_NAME = "crime_Table";
+    private static final int VERSION = 14;
     /**
      * Columns
      */

@@ -38,9 +38,8 @@ public class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull final CrimeHolder viewHolder, int i) {
-
             final CrimeBean crimeBean = mBeanList.get(i);
-            ((CrimeHolder) viewHolder).bind(crimeBean);
+            viewHolder.bind(crimeBean);
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -48,6 +47,7 @@ public class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder> {
                     mContext.startActivity(intent);
                 }
             });
+            //长按删除
             viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {

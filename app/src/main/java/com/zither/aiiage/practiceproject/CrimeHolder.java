@@ -20,6 +20,9 @@ public class CrimeHolder extends RecyclerView.ViewHolder{
     private LinearLayout mLinearLayout;
     public void  bind(CrimeBean crimeBean){
         mCrimeBean= crimeBean;
+        if (crimeBean==null){
+            return;
+        }
         mTitle.setText(crimeBean.getName());
         mDate.setText(crimeBean.getDate().toString());
         System.out.println("mCrimeBean"+mCrimeBean.toString());
