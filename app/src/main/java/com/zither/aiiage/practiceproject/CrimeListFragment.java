@@ -49,6 +49,7 @@ public class CrimeListFragment extends android.support.v4.app.Fragment implement
     private View loadMoreIv;
     private boolean loadMoreCrime = false;
     List<CrimeBean> crimeBeanList = new ArrayList<>();
+
     public CrimeListFragment() {
         // Required empty public constructor
     }
@@ -126,7 +127,7 @@ public class CrimeListFragment extends android.support.v4.app.Fragment implement
     }
 
     /**
-     *   加载更多数据，每次最多加载8条
+     * 加载更多数据，每次最多加载8条
      */
     private void loadMoreData() {
         loadTimes++;
@@ -146,6 +147,7 @@ public class CrimeListFragment extends android.support.v4.app.Fragment implement
         }
 
     }
+
     //更新UI
     private void updateUI() {
         if (mCrimeAdapter == null) {
@@ -158,6 +160,7 @@ public class CrimeListFragment extends android.support.v4.app.Fragment implement
             mCrimeAdapter.notifyDataSetChanged();
         }
     }
+
     //添加返回bean
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -176,8 +179,8 @@ public class CrimeListFragment extends android.support.v4.app.Fragment implement
      */
     @Override
     public void onRefresh() {
-        if (!isRefresh){
-            isRefresh=true;
+        if (!isRefresh) {
+            isRefresh = true;
 
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -188,7 +191,7 @@ public class CrimeListFragment extends android.support.v4.app.Fragment implement
                     mCrimeAdapter.notifyDataSetChanged();
                     isRefresh = false;
                 }
-            },1000);
+            }, 1000);
         }
     }
 
@@ -199,18 +202,20 @@ public class CrimeListFragment extends android.support.v4.app.Fragment implement
             loadMoreIv.clearAnimation();
         }
     }
+
     GestureDetector mDetector;
     float startPointEvent, stopPointEvent;
+
     /**
      * 触摸事件
      */
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
-        if (motionEvent.getAction()==MotionEvent.ACTION_DOWN){
-            startPointEvent=motionEvent.getY();
+        if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+            startPointEvent = motionEvent.getY();
         }
-        if (motionEvent.getAction()==MotionEvent.ACTION_UP){
-            stopPointEvent=motionEvent.getY();
+        if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+            stopPointEvent = motionEvent.getY();
         }
         return mDetector.onTouchEvent(motionEvent);
     }
@@ -219,7 +224,7 @@ public class CrimeListFragment extends android.support.v4.app.Fragment implement
      * 手势监听及判断是下拉刷新还是上拉加载数据
      */
     private void initGestureDetector() {
-        mDetector=new GestureDetector(getActivity(), new GestureDetector.OnGestureListener() {
+        mDetector = new GestureDetector(getActivity(), new GestureDetector.OnGestureListener() {
             @Override
             public boolean onDown(MotionEvent motionEvent) {
                 return false;
@@ -237,9 +242,9 @@ public class CrimeListFragment extends android.support.v4.app.Fragment implement
 
             @Override
             public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
-                float y = stopPointEvent - startPointEvent;
-                Log.d(TAG, "onScroll: "+y);
-                if (y>0){
+                float y = motionEvent1.getY() - startPointEvent;
+                Log.d(TAG, "onScroll: " + y);
+                if (y < 0) {
                     mRecyclerView.addOnScrollListener(scrollChangeListener);
                 }
                 return false;
