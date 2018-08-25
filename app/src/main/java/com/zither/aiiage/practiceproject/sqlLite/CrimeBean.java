@@ -72,4 +72,10 @@ public class CrimeBean implements Serializable{
     public void setSolved(boolean solved) {
         this.solved = solved;
     }
+    /**
+     * 获取照片文件名
+     */
+    public String getPhotoFilename(){
+        return "IMG_"+getId()+".jpg";
+    }
 }

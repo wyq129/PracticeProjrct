@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.zither.aiiage.practiceproject.sqlLite.CrimeBean;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,11 +30,6 @@ public class DatebaseHelper extends SQLiteOpenHelper {
     public static final String crime_date = "DATE";
     public static final String crime_solved = "SOLVED";
     public static final String crime_user = "USER";
-    /**
-     * select type
-     */
-    private final int COL_TYPE_ID = 1;
-    private final int Col_TYPE_NAME = 2;
 
     public DatebaseHelper(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
@@ -177,5 +173,15 @@ public class DatebaseHelper extends SQLiteOpenHelper {
         crimeBean.setUser(user);
         cursor.close();
         return crimeBean;
+    }
+
+    /**
+     * 找到文件保存的目录,返回指向某个具体位置的File对象
+     * @param crimeBean
+     * @return
+     */
+    public File getPhotoFile(CrimeBean crimeBean,Context context){
+        File filesDir=context.getFilesDir();
+        return new File(filesDir,crimeBean.getPhotoFilename());
     }
 }

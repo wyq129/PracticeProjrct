@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <ImageView
-            android:id="@+id/imageview_show"
+            android:id="@+id/iv_showPhoto"
             android:layout_width="88dp"
             android:layout_height="80dp"
             android:src="@drawable/icon"/>
@@ -38,6 +38,7 @@
         </LinearLayout>
     </LinearLayout>
     <ImageButton
+        android:id="@+id/ib_takePhoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hello World!"

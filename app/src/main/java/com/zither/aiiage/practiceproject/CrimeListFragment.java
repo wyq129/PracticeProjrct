@@ -49,7 +49,6 @@ public class CrimeListFragment extends android.support.v4.app.Fragment implement
     private View loadMoreIv;
     private boolean loadMoreCrime = false;
     List<CrimeBean> crimeBeanList = new ArrayList<>();
-
     public CrimeListFragment() {
         // Required empty public constructor
     }
@@ -90,6 +89,7 @@ public class CrimeListFragment extends android.support.v4.app.Fragment implement
                         loadMoreIv.clearAnimation();
                     }
                 }, 1000);
+                mSwipeRefreshLayout.setEnabled(true);
             }
             super.onScrollStateChanged(recyclerView, newState);
         }
@@ -181,7 +181,7 @@ public class CrimeListFragment extends android.support.v4.app.Fragment implement
     public void onRefresh() {
         if (!isRefresh) {
             isRefresh = true;
-
+            mRecyclerView.setEnabled(false);
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -192,6 +192,7 @@ public class CrimeListFragment extends android.support.v4.app.Fragment implement
                     isRefresh = false;
                 }
             }, 1000);
+            mRecyclerView.setEnabled(true);
         }
     }
 
@@ -242,10 +243,11 @@ public class CrimeListFragment extends android.support.v4.app.Fragment implement
 
             @Override
             public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
-                float y = motionEvent1.getY() - startPointEvent;
+                float y = stopPointEvent - startPointEvent;
                 Log.d(TAG, "onScroll: " + y);
-                if (y < 0) {
+                if (y > 0) {
                     mRecyclerView.addOnScrollListener(scrollChangeListener);
+                    mSwipeRefreshLayout.setEnabled(false);
                 }
                 return false;
             }
@@ -257,6 +259,12 @@ public class CrimeListFragment extends android.support.v4.app.Fragment implement
 
             @Override
             public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+                float y = motionEvent1.getY() - startPointEvent;
+                Log.d(TAG, "onScroll: " + y);
+                if (y < 0) {
+                    mRecyclerView.addOnScrollListener(scrollChangeListener);
+                    mSwipeRefreshLayout.setEnabled(false);
+                }
                 return false;
             }
         });

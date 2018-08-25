@@ -5,10 +5,14 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,11 +21,17 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.zither.aiiage.practiceproject.sqlLite.CrimeBean;
 import com.zither.aiiage.practiceproject.sqlLite.DatebaseHelper;
 
+import java.io.File;
 import java.util.Date;
+import java.util.List;
+
+import cn.bluemobi.dylan.photoview.library.PhotoViewAttacher;
 
 
 /**
@@ -30,6 +40,7 @@ import java.util.Date;
 public class CrimePagerFragment extends android.support.v4.app.Fragment implements View.OnClickListener {
     private static final String DATE = "date";
     private static final int REQUEST_CONTACT = 1;
+    private static final int REQUEST_PHOTO = 2;
     CrimeBean mCrimeBean;
     private EditText mTitle;
     private CheckBox mCheckBox;
@@ -37,6 +48,12 @@ public class CrimePagerFragment extends android.support.v4.app.Fragment implemen
     int crimeId;
     String user;
     final Intent pickContact = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+    private File mPhotoFile;
+    private ImageButton takePhoto;
+    private ImageView imageView_show;
+    final Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+    //第三方开源库：PhotoView-master实现缩放的效果 compile 添加
+    private PhotoViewAttacher mPhotoViewAttacher;
 
     public static CrimePagerFragment newInstance(int crimeId) {
         Bundle bundle = new Bundle();
@@ -45,6 +62,8 @@ public class CrimePagerFragment extends android.support.v4.app.Fragment implemen
         crimePagerFragment.setArguments(bundle);
         return crimePagerFragment;
     }
+
+    Bitmap bitmap;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,6 +76,8 @@ public class CrimePagerFragment extends android.support.v4.app.Fragment implemen
         updateDate = view.findViewById(R.id.crimePage_button_send);
         selectUser = view.findViewById(R.id.crimePage_button_select_user);
         sendData = view.findViewById(R.id.crimePage_button_sendto);
+        takePhoto = view.findViewById(R.id.crimePage_takePhoto);
+        imageView_show = view.findViewById(R.id.crimePage_imageView_show);
         sendData.setOnClickListener(this);
         selectUser.setOnClickListener(this);
         updateDate.setOnClickListener(this);
@@ -69,10 +90,13 @@ public class CrimePagerFragment extends android.support.v4.app.Fragment implemen
         Log.d(DATE, "onCreateView: " + crimeId);
         DatebaseHelper datebaseHelper = new DatebaseHelper(getActivity());
         mCrimeBean = datebaseHelper.getCrimeBeanById(crimeId);
+        //获取照片文件位置
+        mPhotoFile = datebaseHelper.getPhotoFile(mCrimeBean, getActivity());
         user = mCrimeBean.getUser();
         mTitle.setText(mCrimeBean.getName());
         mCheckBox.setChecked(mCrimeBean.isSolved());
         mShowDate.setText(mCrimeBean.getDate().toString());
+        updatePhotoView();
         mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -82,6 +106,14 @@ public class CrimePagerFragment extends android.support.v4.app.Fragment implemen
         if (mCrimeBean.getUser() != null) {
             selectUser.setText("联系人是：" + mCrimeBean.getUser());
         }
+        //触发拍照，使用相机Intent
+        final Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        PackageManager packageManager = getActivity().getPackageManager();
+        //检查是否有响应式相机
+        boolean canTakePhoto = mPhotoFile != null && captureImage.resolveActivity(packageManager) != null;
+        takePhoto.setEnabled(canTakePhoto);
+        takePhoto.setOnClickListener(this);
+       imageView_show.setOnClickListener(this);
         return view;
     }
 
@@ -111,6 +143,22 @@ public class CrimePagerFragment extends android.support.v4.app.Fragment implemen
                 i = Intent.createChooser(i, getString(R.string.crime_report));
                 startActivity(i);
                 break;
+            case R.id.crimePage_takePhoto:
+                //把本地文件路径转换成相机能看见的Uri形式
+                Uri uri = FileProvider.getUriForFile(getActivity(), "com.bignerdranch.android.criminaLintent.fileprovider", mPhotoFile);
+                captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                //给相机应用权限
+                List<ResolveInfo> list = getActivity().getPackageManager().queryIntentActivities(captureImage, PackageManager.MATCH_DEFAULT_ONLY);
+                for (ResolveInfo resolveInfo : list) {
+                    getActivity().grantUriPermission(resolveInfo.activityInfo.packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                }
+                startActivityForResult(captureImage, REQUEST_PHOTO);
+                break;
+            case R.id.crimePage_imageView_show:
+                bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(), getActivity());
+                Intent intent1 = ShowPhotoActivity.newInstance(getActivity(),mPhotoFile.getPath());
+                startActivity(intent1);
+                break;
             default:
                 break;
         }
@@ -136,6 +184,16 @@ public class CrimePagerFragment extends android.support.v4.app.Fragment implemen
         return report;
     }
 
+    private void updatePhotoView() {
+        if (mPhotoFile == null || !mPhotoFile.exists()) {
+            imageView_show.setImageBitmap(null);
+        } else {
+            bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(), getActivity());
+
+            imageView_show.setImageBitmap(bitmap);
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode != Activity.RESULT_OK) {
@@ -158,6 +216,39 @@ public class CrimePagerFragment extends android.support.v4.app.Fragment implemen
             } finally {
                 cursor.close();
             }
+        } else if (requestCode == REQUEST_PHOTO) {
+            Uri uri = FileProvider.getUriForFile(getActivity(), "com.bignerdranch.android.criminaLintent.fileprovider", mPhotoFile);
+            getActivity().revokeUriPermission(uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            updatePhotoView();
         }
+    }
+
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
+    }
+
+    /**
+     *
+     */
+    public interface ICallBack{
+        /**
+         * 发送bitmap到Activity
+         * @param bitmap
+         */
+        void sendBitmap(Bitmap bitmap);
+    }
+    // 设置 接口回调 方法
+    public void sendMessage(ICallBack callBack){
+        callBack.sendBitmap(bitmap);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        bitmap.recycle();
     }
 }

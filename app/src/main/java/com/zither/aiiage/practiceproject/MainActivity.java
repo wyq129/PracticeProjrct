@@ -29,9 +29,6 @@ import butterknife.ButterKnife;
  * @date 2018/08/10
  */
 public class MainActivity extends Activity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
-
-    @BindView(R.id.imageview_show)
-    ImageView imageviewShow;
     @BindView(R.id.tv_main_title)
     TextView tvMainTitle;
     @BindView(R.id.et_main_inputTitle)

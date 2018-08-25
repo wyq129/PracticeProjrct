@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.zither.aiiage.practiceproject">
 
+    <uses-feature
+        android:name="android.hardware.camera2"
+        android:required="false" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -18,10 +22,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" android:theme="@style/FullScreenAppTheme"/>
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/FullScreenAppTheme" />
         <activity
             android:name=".CrimePagerActivity"
-            android:theme="@style/FullScreenAppTheme"></activity>
+            android:theme="@style/FullScreenAppTheme" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.bignerdranch.android.criminaLintent.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/files" />
+        </provider>
+
+        <activity android:name=".ShowPhotoActivity"  android:theme="@style/FullScreenAppTheme"></activity>
     </application>
 
 </manifest>
